@@ -14,22 +14,26 @@
 
  ━━━━━━━━━━━━━━━━━
 
-<details><summary><b> - ғᴇᴀᴛᴜʀᴇs:</b></summary>
-  
-## ғᴇᴀᴛᴜʀᴇs
-- Fully customisable.
-- Multi Force Sub Channels 
-- File Auto Delete.
-- Get File Again button.
-- Customisable welcome & Forcesub messages.
-- Token Verification Feature On/Off
-- Can be deployed on heroku directly.
-- Can be deployed on Koyeb Either
 
-- More Features Coming Soon...
+
+<details><summary><b>ғᴇᴀᴛᴜʀᴇs:</b></summary>
+
+• <b>Batch & Custom Batch Links:</b> Create links for one or multiple posts easily using <code>/batch</code> & <code>/custom_batch</code>  
+• <b>Link Generator:</b> Instantly generate direct links with <code>/genlink</code>  
+• <b>Broadcast Tools:</b> Send messages or media to all users using <code>/broadcast</code>, <code>/dbroadcast</code>, or <code>/pbroadcast</code>  
+• <b>Auto File Deletion:</b> Control auto-delete with <code>/dlt_time</code> & <code>/check_dlt_time</code>  
+• <b>User Management:</b> Ban/unban users and view banlist via <code>/ban</code>, <code>/unban</code>, and <code>/banlist</code>  
+• <b>Multi Force Subscription:</b> Add, delete, and manage multiple Force Sub channels with <code>/addchnl</code>, <code>/delchnl</code>, <code>/listchnl</code>  
+• <b>Admin Control:</b> Add or remove admins with <code>/add_admin</code>, <code>/deladmin</code>, and view list via <code>/admins</code>  
+
+• <b>Bot Analytics:</b> Get stats and uptime via <code>/stats</code>, user info with <code>/users</code>, and database count via <code>/count</code>  
+• <b>Deployment Ready:</b> Easily deploy on <b>Heroku</b> or <b>Koyeb</b> in minutes  
+
+<b>✨ More features & enhancements coming soon...</b>
 </details>
 
-<details><summary><b> - ᴠᴀʀɪᴀʙʟᴇs :</b></summary>
+
+<details><summary><b> ᴠᴀʀɪᴀʙʟᴇs :</b></summary>
   
 ## ᴠᴀʀɪᴀʙʟᴇs
 * `API_HASH` Your API Hash from my.telegram.org
@@ -40,21 +44,8 @@
 * `DATABASE_URL` Your mongo db url
 * `DATABASE_NAME` Your mongo db session name
 * `ADMINS` Optional: A space separated list of user_ids of Admins, they can only create links
-* `START_MESSAGE` Optional: start message of bot, use HTML and <a href='https://github.com/codexbotz/File-Sharing-Bot/blob/main/README.md#start_message'>fillings</a>
-* `FORCE_SUB_MESSAGE`Optional:Force sub message of bot, use HTML and Fillings
-* `FORCE_SUB_CHANNEL` Optional: ForceSub Channel ID, leave 0 if you want disable force sub
-* `FORCE_SUB_CHANNEL1` 1st ForceSub Channel ID, leave 0 if you want disable force sub
-* `FORCE_SUB_CHANNEL2` 2nd ForceSub Channel ID, leave 0 if you want disable force sub
-* `FORCE_SUB_CHANNEL3` 3rd ForceSub Channel ID, leave 0 if you want disable force sub
-* `FORCE_SUB_CHANNEL4` 4th ForceSub Channel ID, leave 0 if you want disable force sub
+* `START_MESSAGE` Optional: start message of bot, use HTML and <a href='https://github.com/codeflix-bots/filestore/blob/master/README.md#start_message'>fillings</a>
 * `PROTECT_CONTENT` Optional: True if you need to prevent files from forwarding
-
-### Token Variables
-
-* `IS_VERIFY` = Default : "True" (if you want off : False )
-* `SHORTLINK_URL` = Your shortner Url ( ex. "inshorturl.com")
-* `SHORTLINK_API` = Your shortner API (ex. "PUIAQBIFrydvLhIzAOeGV8yZppu")
-* `VERIFY_EXPIRE` = ( ex. 86400)) # Add time in seconds
 </details>
 
 ## 𝐶𝑜𝑚𝑚𝑎𝑛𝑑𝑠
@@ -67,11 +58,35 @@
 /broadcast - broadcast any messages to bot users
 /dbroadcast - broadcast any messages with auto delete.
 /stats - checking your bot uptime
+/start - start the bot or get posts  
+/batch - create link for more than one posts  
+/custom_batch - create custom batch from channel/group  
+/genlink - create link for one post  
+/users - view bot statistics  
+/broadcast - broadcast any messages to bot users  
+/dbroadcast - broadcast any messages with auto delete  
+/stats - check your bot uptime  
+/dlt_time - set auto delete time for files  
+/check_dlt_time - check current delete time setting  
+/ban - ban a user from using the bot  
+/unban - unban a previously banned user  
+/banlist - get list of banned users  
+/addchnl - add a channel for force subscription  
+/delchnl - remove a force subscribe channel  
+/listchnl - view all added force subscribe channels  
+/fsub_mode - toggle force subscribe on or off  
+/pbroadcast - pin a broadcast to all user's chat 
+/add_admin - add a new admin  
+/deladmin - remove an admin  
+/admins - list all current admins  
 ```
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
-</b>⋗  ᴛᴇʟᴇɢʀᴀᴍ - <b>[ᴄᴏᴅᴇғʟɪx ʙᴏᴛs](https://t.me/codeflix_bots)</b>
+<h3>「 ᴏᴛʜᴇʀ ʙʀᴀɴᴄʜᴇs 」
+</h3>
+
+- <b>[ᴛᴏᴋᴇɴ](https://github.com/Codeflix-Bots/FileStore/tree/token)  ➻  [sʜᴏʀᴛɴᴇʀ](https://github.com/Codeflix-Bots/FileStore/tree/Shortner) </b>
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
