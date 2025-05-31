@@ -9,6 +9,7 @@
 #
 # All rights reserved.
 #
+
 import asyncio
 import os
 import random
@@ -18,7 +19,7 @@ import logging
 from pyrogram import Client, filters, __version__
 from pyrogram.enums import ParseMode, ChatAction, ChatMemberStatus, ChatType
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, ReplyKeyboardMarkup, ChatMemberUpdated, ChatPermissions
-from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, InviteHashEmpty, ChatAdminRequired, PeerIdInvalid, UserIsBlocked, InputUserDeactivated, UserNotParticipant
+from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, InviteHashEmpty, ChatAdminRequired, PeerIdInvalid, UserIsBlocked, InputUserDeactivated
 from bot import Bot
 from config import *
 from helper_func import *
@@ -49,7 +50,7 @@ MESSAGE_EFFECT_IDS = [
     5046589136895476101,  # 💩
 ]
 
-#Request force sub mode commad,,,,,,
+#Request force sub mode command
 @Bot.on_message(filters.command('fsub_mode') & filters.private & admin)
 async def change_force_sub_mode(client: Client, message: Message):
     temp = await message.reply("<b><i>ᴡᴀɪᴛ ᴀ sᴇᴄ..</i></b>", quote=True)
@@ -93,7 +94,6 @@ async def handle_Chatmembers(client, chat_member_updated: ChatMemberUpdated):
 
             if await db.req_user_exist(chat_id, user_id):
                 await db.del_req_user(chat_id, user_id)
-
 
 # This handler will capture any join request to the channel/group where the bot is an admin
 @Bot.on_chat_join_request()
@@ -170,7 +170,6 @@ async def add_force_sub(client: Client, message: Message):
     except Exception as e:
         return await temp.edit(f"❌ Failed to add chat:\n<code>{chat_id}</code>\n\n<i>{e}</i>")
 
-
 # Don't Remove Credit @CodeFlix_Bots, @rohit_1888
 # Ask Doubt on telegram @CodeflixSupport
 #
@@ -231,6 +230,18 @@ async def list_force_sub_channels(client: Client, message: Message):
 
     await temp.edit(result, disable_web_page_preview=True, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Close ✖️", callback_data="close")]]))
 
+# Don't Remove Credit @CodeFlix_Bots, @rohit_1888
+# Ask Doubt on telegram @CodeflixSupport
+#
+# Copyright (C) 2025 by Codeflix-Bots@Github, < https://github.com/Codeflix-Bots >.
+#
+# This file is part of < https://github.com/Codeflix-Bots/FileStore > project,
+# and is released under the MIT License.
+# Please see < https://github.com/Codeflix-Bots/FileStore/blob/master/LICENSE >
+#
+# All rights reserved.
+#
+
 # Function to show force-sub settings with channels list, buttons, image, and message effects
 async def show_force_sub_settings(client: Client, chat_id: int, message_id: int = None):
     """Show the force-sub settings menu with channel list and controls."""
@@ -255,6 +266,9 @@ async def show_force_sub_settings(client: Client, chat_id: int, message_id: int 
             [
                 InlineKeyboardButton("• Add Channels ", callback_data="fsub_add_channel"),
                 InlineKeyboardButton(" Remove Channels •", callback_data="fsub_remove_channel")
+            ],
+            [
+                InlineKeyboardButton("• Toggle Mode •", callback_data="fsub_toggle_mode")
             ],
             [
                 InlineKeyboardButton("• Refresh ", callback_data="fsub_refresh"),
@@ -367,6 +381,36 @@ async def force_sub_callback(client: Client, callback: CallbackQuery):
         )
         await callback.answer("Please provide the channel ID or type 'all'.")
 
+    elif data == "fsub_toggle_mode":
+        temp = await callback.message.reply("<b><i>Wait a sec...</i></b>", quote=True)
+        channels = await db.show_channels()
+
+        if not channels:
+            await temp.edit("<blockquote><b>❌ No force-sub channels found.</b></blockquote>")
+            await callback.answer()
+            return
+
+        buttons = []
+        for ch_id in channels:
+            try:
+                chat = await client.get_chat(ch_id)
+                mode = await db.get_channel_mode(ch_id)
+                status = "🟢" if mode == "on" else "🔴"
+                title = f"{status} {chat.title}"
+                buttons.append([InlineKeyboardButton(title, callback_data=f"rfs_ch_{ch_id}")])
+            except Exception as e:
+                logger.error(f"Failed to fetch chat {ch_id}: {e}")
+                buttons.append([InlineKeyboardButton(f"⚠️ {ch_id} (Unavailable)", callback_data=f"rfs_ch_{ch_id}")])
+
+        buttons.append([InlineKeyboardButton("Close ✖️", callback_data="close")])
+
+        await temp.edit(
+            "<blockquote><b>⚡ Select a channel to toggle force-sub mode:</b></blockquote>",
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True
+        )
+        await callback.answer()
+
     elif data == "fsub_refresh":
         await show_force_sub_settings(client, chat_id, callback.message.id)
         await callback.answer("Settings refreshed!")
@@ -381,103 +425,10 @@ async def force_sub_callback(client: Client, callback: CallbackQuery):
         await show_force_sub_settings(client, chat_id, message_id)
         await callback.answer("Back to settings!")
 
-# Modified filter to avoid conflict with link_generator.py
-async def fsub_state_filter(_, __, message: Message):
-    """Filter to ensure messages are processed only for force-sub related states."""
-    chat_id = message.chat.id
-    state = await db.get_temp_state(chat_id)
-    logger.info(f"Checking fsub_state_filter for chat {chat_id}: state={state}, message_text={message.text}")
-    if state not in ["awaiting_add_channel_input", "awaiting_remove_channel_input"]:
-        logger.info(f"State {state} not relevant for fsub_state_filter in chat {chat_id}")
-        return False
-    if not message.text:
-        logger.info(f"No message text provided in chat {chat_id}")
-        return False
-    # Only process channel ID or 'all' inputs
-    is_valid_input = message.text.lower() == "all" or (message.text.startswith("-") and message.text[1:].isdigit())
-    logger.info(f"Input validation for chat {chat_id}: is_valid_input={is_valid_input}")
-    return is_valid_input
-
-@Bot.on_message(filters.private & admin & filters.create(fsub_state_filter), group=1)
-async def handle_channel_input(client: Client, message: Message):
-    """Handle channel ID input for force-sub settings."""
-    chat_id = message.chat.id
-    state = await db.get_temp_state(chat_id)
-    logger.info(f"Handling input: {message.text} for state: {state} in chat {chat_id}")
-
-    try:
-        if state == "awaiting_add_channel_input":
-            channel_id = int(message.text)
-            all_channels = await db.show_channels()
-            channel_ids_only = [cid if isinstance(cid, int) else cid[0] for cid in all_channels]
-            if channel_id in channel_ids_only:
-                await message.reply(f"<blockquote><b>Channel already exists:</b></blockquote>\n <blockquote><code>{channel_id}</code></blockquote>")
-                await db.set_temp_state(chat_id, "")
-                await show_force_sub_settings(client, chat_id)
-                return
-
-            chat = await client.get_chat(channel_id)
-
-            if chat.type != ChatType.CHANNEL:
-                await message.reply("<b>❌ Only public or private channels are allowed.</b>")
-                await db.set_temp_state(chat_id, "")
-                await show_force_sub_settings(client, chat_id)
-                return
-
-            member = await client.get_chat_member(chat.id, "me")
-            if member.status not in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
-                await message.reply("<b>❌ Bot must be an admin in that channel.</b>")
-                await db.set_temp_state(chat_id, "")
-                await show_force_sub_settings(client, chat_id)
-                return
-
-            link = await client.export_chat_invite_link(chat.id) if not chat.username else f"https://t.me/{chat.username}"
-            
-            await db.add_channel(channel_id)
-            await message.reply(
-                f"<blockquote><b>✅ Force-sub Channel added successfully!</b></blockquote>\n\n"
-                f"<blockquote><b>Name:</b> <a href='{link}'>{chat.title}</a></blockquote>\n"
-                f"<blockquote><b>ID: <code>{channel_id}</code></b></blockquote>",
-                parse_mode=ParseMode.HTML,
-                disable_web_page_preview=True
-            )
-            await db.set_temp_state(chat_id, "")
-            await show_force_sub_settings(client, chat_id)
-
-        elif state == "awaiting_remove_channel_input":
-            all_channels = await db.show_channels()
-            if message.text.lower() == "all":
-                if not all_channels:
-                    await message.reply("<blockquote><b>❌ No force-sub channels found.</b></blockquote>")
-                    await db.set_temp_state(chat_id, "")
-                    await show_force_sub_settings(client, chat_id)
-                    return
-                for ch_id in all_channels:
-                    await db.rem_channel(ch_id)
-                await message.reply("<blockquote><b>✅ All force-sub channels removed.</b></blockquote>")
-            else:
-                ch_id = int(message.text)
-                if ch_id in all_channels:
-                    await db.rem_channel(ch_id)
-                    await message.reply(f"<blockquote><b>✅ Channel removed:</b></blockquote>\n <blockquote><code>{ch_id}</code></blockquote>")
-                else:
-                    await message.reply(f"<blockquote><b>❌ Channel not found:</b></blockquote>\n <blockquote><code>{ch_id}</code></blockquote>")
-            await db.set_temp_state(chat_id, "")
-            await show_force_sub_settings(client, chat_id)
-
-    except ValueError:
-        logger.error(f"Invalid input received: {message.text}")
-        await message.reply("<blockquote><b>❌ Invalid channel ID!</b></blockquote>")
+    elif data == "fsub_cancel":
         await db.set_temp_state(chat_id, "")
-        await show_force_sub_settings(client, chat_id)
-    except Exception as e:
-        logger.error(f"Failed to process channel input {message.text}: {e}")
-        await message.reply(
-            f"<blockquote><b>❌ Failed to process channel:</b></blockquote>\n<code>{message.text}</code>\n\n<i>{e}</i>",
-            parse_mode=ParseMode.HTML
-        )
-        await db.set_temp_state(chat_id, "")
-        await show_force_sub_settings(client, chat_id)
+        await show_force_sub_settings(client, chat_id, message_id)
+        await callback.answer("Action cancelled!")
 
 # Don't Remove Credit @CodeFlix_Bots, @rohit_1888
 # Ask Doubt on telegram @CodeflixSupport
